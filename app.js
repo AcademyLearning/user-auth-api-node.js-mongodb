@@ -6,6 +6,12 @@ const { connectToDB } = require("./db");
 const app = express();
 app.use(bodyParser.json());
 
+
+console.log("Nitin");
+
+
+
+
 // Start the server
 const PORT = 3000;
 connectToDB().then(() => {
