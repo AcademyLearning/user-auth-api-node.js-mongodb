@@ -1,6 +1,5 @@
 const express = require("express");
 const mongoose = require("mongoose");
-
 const bodyParser = require("body-parser");
 const { connectToDB , getUserCollection } = require("./db");
 // const routes = require("./routes");
@@ -9,25 +8,35 @@ const { connectToDB , getUserCollection } = require("./db");
 const app = express();
 app.use(bodyParser.json());
 
+
 app.post('/signup', async (req, res) => {
-  const userData = {
-      email: req.body.email,
-      password: req.body.password,
-      confirmpassword: req.body.confirmpassword
-  }
+  const { email, mobileNumber,password,confirmpassword } = req.body;
+  
   try {
     const collection = await getUserCollection();
-      const existingUser = await collection.findOne({ email: userData.email });
-      if (existingUser) {
-          res.send("User details already exist");
-      } else {
-          await collection.insertOne(userData);
-          console.log(userData);
-          res.send("User registered successfully");
-      }
+    const emailExists = await collection.findOne({ email : email});
+    const mobileExists = await collection.findOne({ mobileNumber : mobileNumber });
+    console.log(emailExists,mobileExists)
+  
+    if (emailExists) {
+      return res.status(400).json({ error: 'User email already exists' });
+    }else if (mobileExists){
+      return res.status(400).json({ error: 'User mobile number already exists' });
+    }
+
+    const newUser = new User({
+      email,
+      mobileNumber,
+      password,
+      confirmpassword
+    });
+
+    // await newUser.save();
+    await collection.insertOne(newUser);
+    console.log(newUser);
+    return res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-      console.error('Error during signup:', error);
-      res.status(500).send("An error occurred during signup");
+    return res.status(500).json({ error: 'An error occurred' });
   }
 });
 
