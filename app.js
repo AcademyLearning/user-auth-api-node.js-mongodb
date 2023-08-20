@@ -10,36 +10,32 @@ app.use(bodyParser.json());
 
 
 app.post('/signup', async (req, res) => {
-  const { email, mobileNumber,password,confirmpassword } = req.body;
-  
+  const userData = {
+    email: req.body.email,
+    mobileNumber: req.body.mobileNumber,
+    password: req.body.password,
+    confirmpassword: req.body.confirmpassword
+  };
+
   try {
     const collection = await getUserCollection();
-    const emailExists = await collection.findOne({ email : email});
-    const mobileExists = await collection.findOne({ mobileNumber : mobileNumber });
-    console.log(emailExists,mobileExists)
-  
-    if (emailExists) {
-      return res.status(400).json({ error: 'User email already exists' });
-    }else if (mobileExists){
-      return res.status(400).json({ error: 'User mobile number already exists' });
+    const existingUserByEmail = await collection.findOne({ email: userData.email });
+    const existingUserByMobile = await collection.findOne({ mobileNumber: userData.mobileNumber });
+
+    if (existingUserByEmail) {
+      res.send("User email already exists");
+    } else if (existingUserByMobile) {
+      res.send("User mobile number already exists");  
+    }else {
+      await collection.insertOne(userData);
+      console.log(userData);
+      res.status(201).send("User registered successfully");
     }
-
-    const newUser = new User({
-      email,
-      mobileNumber,
-      password,
-      confirmpassword
-    });
-
-    // await newUser.save();
-    await collection.insertOne(newUser);
-    console.log(newUser);
-    return res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-    return res.status(500).json({ error: 'An error occurred' });
+    console.error('Error during signup:', error);
+    res.status(500).send("An error occurred during signup");
   }
 });
-
 
 // Start the server
 const PORT = 3000;
