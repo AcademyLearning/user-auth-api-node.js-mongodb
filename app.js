@@ -52,9 +52,7 @@ app.post("/login", async (req, res) => {
     const { emailId, password } = req.body;
     if (!emailId) {
       return res.status(400).json({ error: "Email is required." });
-    }
-
-    if (!password) {
+    }else if (!password) {
       return res.status(400).json({ error: "Password is required." });
     }
     
