@@ -38,13 +38,9 @@ app.post("/signup", async (req, res) => {
     } else {
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         userData.password = hashedPassword;
-        console.log(hashedPassword)
         const hashedPassword1 = await bcrypt.hash(userData.confirmpassword, 10);
         userData.confirmpassword = hashedPassword1;
-        console.log(hashedPassword1)
-
       await collection.insertOne(userData);
-      console.log(userData);
       res.status(201).send("User registered successfully");
     }
   } catch (error) {
@@ -52,17 +48,7 @@ app.post("/signup", async (req, res) => {
     res.status(500).send("An error occurred during signup");
   }
 });
-// const passwordsecure = async (password) => {
-//   const passwordhash = await bcrypt.hash(password , 10)
-//   console.log(passwordhash);
 
-//   const passwordmatch = await bcrypt.compare("test123",passwordhash)
-//   console.log(passwordmatch);
-// }
-// passwordsecure("test123");
-
-
-// Start the server
 const PORT = 3000;
 connectToDB().then(() => {
   app.listen(PORT, () => {
