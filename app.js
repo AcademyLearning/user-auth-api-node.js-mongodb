@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { connectToDB, getUserCollection } = require("./db");
+const bcrypt = require("bcryptjs");
+
 // const routes = require("./routes");
 
 const app = express();
@@ -23,12 +25,24 @@ app.post("/signup", async (req, res) => {
     const existingUserByMobile = await collection.findOne({
       mobileNumber: userData.mobileNumber,
     });
+    const existingUserByPassword = await collection.findOne({
+      password: userData.password,
+    });
 
     if (existingUserByEmail) {
       res.send("User email already exists");
     } else if (existingUserByMobile) {
       res.send("User mobile number already exists");
+    } else if (existingUserByPassword) {
+      res.send("User password already exists");
     } else {
+        const hashedPassword = await bcrypt.hash(userData.password, 10);
+        userData.password = hashedPassword;
+        console.log(hashedPassword)
+        const hashedPassword1 = await bcrypt.hash(userData.confirmpassword, 10);
+        userData.confirmpassword = hashedPassword1;
+        console.log(hashedPassword1)
+
       await collection.insertOne(userData);
       console.log(userData);
       res.status(201).send("User registered successfully");
@@ -39,35 +53,15 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// const passwordsecure = async (password) => {
+//   const passwordhash = await bcrypt.hash(password , 10)
+//   console.log(passwordhash);
 
+//   const passwordmatch = await bcrypt.compare("test123",passwordhash)
+//   console.log(passwordmatch);
+// }
+// passwordsecure("test123");
 
-
-
-
-app.post("/login", async (req, res) => {
-  try {
-    const { emailId, password } = req.body;
-    if (!emailId) {
-      return res.status(400).json({ error: "Email is required." });
-    } else if (!password) {
-      return res.status(400).json({ error: "Password is required." });
-    }
-
-    const collection = await getUserCollection();
-    const userEmail = await collection.findOne({ emailId });
-
-    if (!userEmail) {
-      return res.status(404).json({ message: "Email not found" });
-    } else if (userEmail.password !== password) {
-      return res.status(401).json({ message: "Password not matched" });
-    }
-
-    res.status(200).json({ message: "Login successful" });
-  } catch (err) {
-    console.error("Error logging in user:", err);
-    res.status(500).json({ error: "Failed to login user." });
-  }
-});
 
 // Start the server
 const PORT = 3000;
