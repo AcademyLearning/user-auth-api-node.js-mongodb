@@ -52,7 +52,6 @@ app.post("/signup", async (req, res) => {
     res.status(500).send("An error occurred during signup");
   }
 });
-
 // const passwordsecure = async (password) => {
 //   const passwordhash = await bcrypt.hash(password , 10)
 //   console.log(passwordhash);
