@@ -41,15 +41,15 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    const { emailId, password } = req.body;
-    if (!emailId) {
+    const { email, password } = req.body;
+    if (!email) {
       return res.status(400).json({ error: "Email is required." });
     } else if (!password) {
       return res.status(400).json({ error: "Password is required." });
     }
 
     const collection = await getUserCollection();
-    const userEmail = await collection.findOne({ emailId });
+    const userEmail = await collection.findOne({ email });
 
     if (!userEmail) {
       return res.status(404).json({ message: "Email not found" });
