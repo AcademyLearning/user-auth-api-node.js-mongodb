@@ -60,14 +60,17 @@ app.post("/login", async (req, res) => {
 
     const collection = await getUserCollection();
     const userEmail = await collection.findOne({ email });
-
     if (!userEmail) {
       return res.status(404).json({ message: "Email not found" });
-    } else if (userEmail.password !== password) {
-      return res.status(401).json({ message: "Password not matched" });
     }
 
+    const hashedPassword = await bcrypt.compare(password , userEmail.password);
+
+     if (!hashedPassword) {
+      return res.status(401).json({ message: "Password not matched" });
+    }else {
     res.status(200).json({ message: "Login successful" });
+    }
   } catch (err) {
     console.error("Error logging in user:", err);
     res.status(500).json({ error: "Failed to login user." });
