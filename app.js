@@ -45,12 +45,14 @@ app.post("/signup", async (req, res) => {
 
       const token = jwt.sign(
         {email : userData.email},
+        {password : userData.password},
+        // process.env.JWT_SECRET,
         {
           expiresIn: "2h"
         }
       );
       userData.token = token
-      userData.password = undefined
+      userData.password = token
       res.status(201).json(userData)
 
       await collection.insertOne(userData);
