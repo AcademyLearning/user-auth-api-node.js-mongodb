@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { connectToDB, getUserCollection } = require("./db");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
 
 // const routes = require("./routes");
 
@@ -40,6 +42,17 @@ app.post("/signup", async (req, res) => {
         userData.password = hashedPassword;
         const hashedPassword1 = await bcrypt.hash(userData.confirmpassword, 10);
         userData.confirmpassword = hashedPassword1;
+
+      const token = jwt.sign(
+        {email : userData.email},
+        {
+          expiresIn: "2h"
+        }
+      );
+      userData.token = token
+      userData.password = undefined
+      res.status(201).json(userData)
+
       await collection.insertOne(userData);
       res.status(201).send("User registered successfully");
     }
