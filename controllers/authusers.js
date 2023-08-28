@@ -37,3 +37,6 @@ const usersignup = async (req, res) => {
     res.status(500).send("An error occurred during signup");
   }
 };
+
+
+module.exports = { usersignup };
