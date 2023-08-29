@@ -2,18 +2,16 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { connectToDB, getUserCollection } = require("./db");
-const bcrypt = require("bcryptjs");
-const routes = require('./routes/authusers')
-const controllers = require("./controllers/authusers")
+// const bcrypt = require("bcryptjs");
+// const routes = require('./routes/authusers')
+// const controllers = require("./controllers/authusers")
 
 const usersroutes = require("./routes/authusers");
 
 const app = express();
 app.use(bodyParser.json());
 
-
-app.use("/api/authusers",usersroutes);
-
+app.use("/api/authusers", usersroutes);
 
 // app.post("/login", async (req, res) => {
 //   try {
@@ -39,7 +37,6 @@ app.use("/api/authusers",usersroutes);
 //     res.status(500).json({ error: "Failed to login user." });
 //   }
 // });
-
 
 const PORT = 3000;
 connectToDB().then(() => {

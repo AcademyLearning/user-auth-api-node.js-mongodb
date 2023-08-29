@@ -1,5 +1,6 @@
 const express = require("express");
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
+const { connectToDB, getUserCollection } = require("../db");
 
 const usersignup = async (req, res) => {
   const userData = {
@@ -23,9 +24,11 @@ const usersignup = async (req, res) => {
     } else if (existingUserByMobile) {
       res.send("User mobile number already exists");
     } else {
-      
       const hashedPassword = await bcrypt.hash(userData.password, 10);
-      const hashedConfirmPassword = await bcrypt.hash(userData.confirmpassword, 10);
+      const hashedConfirmPassword = await bcrypt.hash(
+        userData.confirmpassword,
+        10
+      );
       userData.password = hashedPassword;
       userData.confirmpassword = hashedConfirmPassword;
 
@@ -37,6 +40,5 @@ const usersignup = async (req, res) => {
     res.status(500).send("An error occurred during signup");
   }
 };
-
 
 module.exports = { usersignup };
